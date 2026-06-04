@@ -2,7 +2,6 @@ function triggerImmediate(e) {
 
   const sheet = e.source.getActiveSheet();
 
-  // Only run on delivery report
   if (sheet.getName() !== "delivery report") return;
 
   const range = e.range;
@@ -10,26 +9,25 @@ function triggerImmediate(e) {
   const startRow = range.getRow();
   const numRows = range.getNumRows();
 
-  const col = range.getColumn();
-  const numCols = range.getNumColumns();
-  const lastCol = col + numCols - 1
+  const startCol = range.getColumn();
+  const endCol = startCol + range.getNumColumns() - 1;
 
-  // N column only
-  if (col > 14 || lastCol < 14) return;
+  // Check if column N (14) is within the pasted range
+  if (startCol > 14 || endCol < 14) return;
 
-  // Get pasted values
+  // Get only column N values
+  const colNIndex = 14 - startCol; // relative index within the range
+
   const values = range.getValues();
 
   for (let i = 0; i < numRows; i++) {
 
     const row = startRow + i;
 
-    // Ignore header
     if (row < 2) continue;
 
-    const value = values[i][0];
+    const value = values[i][colNIndex];
 
-    // Skip empty
     if (!value) continue;
 
     try {
